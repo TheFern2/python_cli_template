@@ -1,13 +1,15 @@
 import logging
 import time
-import argparse
 
-from CustomFormatter import CustomFormatter
 from Config import Config
+from tap import Tap
+
+class MyArgumentParser(Tap):
+    test_arg: str = 'Hello!'
 
 class App:
     logger = logging.getLogger("console")
-    args = None
+    args = MyArgumentParser().parse_args()
 
     @classmethod
     def run(cls):
@@ -18,7 +20,6 @@ class App:
     @classmethod
     def init(cls):
         cls.init_logging()
-        cls.init_args()
         Config.read_settings()
         cls.logger.info(f"App {Config.app_name} {Config.version} initialized")
 
@@ -27,12 +28,5 @@ class App:
         cls.logger.setLevel(logging.DEBUG)
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-        ch.setFormatter(CustomFormatter())
         cls.logger.addHandler(ch)
 
-
-    @classmethod
-    def init_args(cls):
-        parser = argparse.ArgumentParser()
-        parser.add_argument('test_arg', nargs='?', help="Test argument")
-        cls.args = parser.parse_args()
